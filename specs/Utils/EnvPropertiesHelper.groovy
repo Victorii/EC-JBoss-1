@@ -34,6 +34,10 @@ class EnvPropertiesHelper {
         return System.getenv('JBOSS_DOMAIN_MASTER_HOSTNAME') ?: 'master'
     }
 
+    public static String getJbossDomainSlaveHostname() {
+        return System.getenv('JBOSS_DOMAIN_SLAVE_HOSTNAME') ?: 'slave'
+    }
+
     public static String getResourceHostname() {
         return System.getenv('RESOURCE_HOSTNAME') ?: 'jboss'
     }

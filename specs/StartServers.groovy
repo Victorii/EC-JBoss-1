@@ -245,23 +245,25 @@ class StartServers extends PluginTestHelper {
         setup:
         String testCaseId = "C277750"
 
-        String serverGroupNameMaster = "server-group-master-$testCaseId"
-        String serverGroupNameSlave = "server-group-slave-$testCaseId"
-        String serverName1 = "server-1-$testCaseId"
-        String serverName2 = "server-2-$testCaseId"
+        String serverGroupName = "server-group-$testCaseId"
+        logger.info("group "+serverGroupName)
+        String serverMasterName1 = "server-1-$testCaseId"
+        String serverMasterName2 = "server-2-$testCaseId"
+        String serverSlaveName1 = "server-3-$testCaseId"
+        String serverSlaveName2 = "server-4-$testCaseId"
+
         String hostName = EnvPropertiesHelper.getJbossDomainMasterHostname()
         String hostName2 = EnvPropertiesHelper.getJbossDomainSlaveHostname()
-        //create server group and server for master host
-        ServerGroupHelper serverGroupMaster = new ServerGroupHelper(serverGroupNameMaster)
-        ServerHelper serverMaster1 = new ServerHelper(serverName1, serverGroupMaster, hostName)
-        ServerHelper serverMaster2 = new ServerHelper(serverName2, serverGroupMaster, hostName)
-        //create server group and server for slave host
-        ServerGroupHelper serverGroupSlave = new ServerGroupHelper(serverGroupNameSlave)
-        ServerHelper serverSlave1 = new ServerHelper(serverName1, serverGroupSlave, hostName2)
-        ServerHelper serverSlave2 = new ServerHelper(serverName2, serverGroupSlave, hostName2)
 
-        runCliCommand(CliCommandsGeneratorHelper.addServerGroupCmd(serverGroupMaster))
-        runCliCommand(CliCommandsGeneratorHelper.addServerGroupCmd(serverGroupSlave))
+        ServerGroupHelper serverGroup = new ServerGroupHelper(serverGroupName)
+        //create servers for master host
+        ServerHelper serverMaster1 = new ServerHelper(serverMasterName1, serverGroupName, hostName)
+        ServerHelper serverMaster2 = new ServerHelper(serverMasterName2, serverGroupName, hostName)
+        //create servers for slave host
+        ServerHelper serverSlave1 = new ServerHelper(serverSlaveName1,serverGroupName, hostName2)
+        ServerHelper serverSlave2 = new ServerHelper(serverSlaveName2, serverGroupName, hostName2)
+
+        runCliCommand(CliCommandsGeneratorHelper.addServerGroupCmd(serverGroup))
 
         runCliCommand(CliCommandsGeneratorHelper.addServerCmd(serverMaster1))
         runCliCommand(CliCommandsGeneratorHelper.addServerCmd(serverMaster2))
@@ -283,7 +285,7 @@ class StartServers extends PluginTestHelper {
         def runParams = [
                 serverconfig      : defaultConfigName,
                 scriptphysicalpath: defaultCliPath,
-                serversgroup      : [serverGroupMaster,serverGroupSlave],
+                serversgroup      : serverGroupName,
                 wait_time         : defaultWaitTime
         ]
         RunProcedureJob runProcedureJob = runProcedureUnderTest(runParams)
@@ -309,8 +311,7 @@ class StartServers extends PluginTestHelper {
         runCliCommand(CliCommandsGeneratorHelper.removeServerCmd(serverMaster2))
         runCliCommand(CliCommandsGeneratorHelper.removeServerCmd(serverSlave1))
         runCliCommand(CliCommandsGeneratorHelper.removeServerCmd(serverSlave2))
-        runCliCommand(CliCommandsGeneratorHelper.removeServerGroupCmd(serverGroupMaster))
-        runCliCommand(CliCommandsGeneratorHelper.removeServerGroupCmd(serverGroupSlave))
+        runCliCommand(CliCommandsGeneratorHelper.removeServerGroupCmd(serverGroup))
     }
 
     @Unroll
